@@ -1,0 +1,11 @@
+groups:
+  - name: node_rules
+    rules:
+      - alert: HighCPUUsage
+        expr: process_cpu_seconds_total{job="nodejs-app"} > 0.5
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High CPU usage detected on {{ $labels.instance }}"
+          description: "CPU usage has been above 50% for more than 1 minute."
