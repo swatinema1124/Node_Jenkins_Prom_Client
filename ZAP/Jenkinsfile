@@ -1,0 +1,56 @@
+pipeline {
+    agent any
+
+    environment {
+        ZAP_HOME = '/usr/local/zaproxy'
+        ZAP_CMD = 'zaproxy'
+        REPORT_DIR = '/var/lib/jenkins/zap-reports'
+    }
+
+    stages {
+        stage('Kill Existing ZAP') {
+            steps {
+                script {
+                    // Kill any existing ZAP processes
+                    sh 'pkill -f zap || true'
+                }
+            }
+        }
+
+        stage('Prepare Environment') {
+            steps {
+                script {
+                    // Create directory for ZAP session and report
+                    sh "mkdir -p ${REPORT_DIR}"
+                }
+            }
+        }
+
+        stage('Run ZAP Scan') {
+            steps {
+                script {
+                    // Run ZAP scan
+                    sh "sudo ${ZAP_CMD} -cmd -quickurl http://<ip_address_of_ec2>:3101 -quickout ${REPORT_DIR}/report.html -port 8081"
+                }
+            }
+        }
+
+        stage('Archive Report') {
+            steps {
+                script {
+                    // Archive the HTML report
+                    archiveArtifacts artifacts: "${REPORT_DIR}/report.html", allowEmptyArchive: true
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            script {
+                // Cleanup
+                sh 'pkill -f zap || true'
+            }
+        }
+    }
+}
