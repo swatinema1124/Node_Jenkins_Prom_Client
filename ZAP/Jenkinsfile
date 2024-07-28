@@ -30,7 +30,7 @@ pipeline {
             steps {
                 script {
                     // Run ZAP scan
-                    sh "sudo ${ZAP_CMD} -cmd -quickurl http://<ip_address_of_ec2>:3101 -quickout ${REPORT_DIR}/report.html -port 8081"
+                    sh "sudo ${ZAP_CMD} -cmd -quickurl http://<ip_address_of_ec2>:3101 -quickout ${REPORT_DIR}/report.html -port 8183"
                 }
             }
         }
